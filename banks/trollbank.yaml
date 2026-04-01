@@ -1,0 +1,65 @@
+tenant:
+  id: trollbank
+  bankName: Trollbanken
+  bankCode: "8602"
+  country: "NO"
+  currency: "NOK"
+  branding:
+    primaryColor: "#2D5A27"
+    secondaryColor: "#E8F5E3"
+    logo: "trollbank-logo.svg"
+    tagline: "Sterk som et troll"
+products:
+  - id: hverdagskonto
+    name: "Hverdagskonto"
+    type: CURRENT
+    fees: { monthly: 0 }
+    features: { onlinePayments: true, debitCard: true }
+  - id: trollspar
+    name: "Trollspar"
+    type: SAVINGS
+    interestRate: 3.50
+    features: { maxWithdrawalsPerMonth: 4 }
+  - id: ungdomskonto
+    name: "Ungdomskonto"
+    type: CURRENT
+    fees: { monthly: 0 }
+    features: { onlinePayments: true, debitCard: true, ageLimit: 25 }
+demoData:
+  customers:
+    - firstName: Per
+      lastName: Olsen
+      nationalId: "12068712345"
+      accounts:
+        - type: CURRENT
+          product: hverdagskonto
+          initialBalance: 32100.75
+          generateTransactions: 40
+        - type: SAVINGS
+          product: trollspar
+          initialBalance: 89500.00
+      cards:
+        - type: DEBIT
+          linkedAccount: 0
+    - firstName: Ingrid
+      lastName: Berg
+      nationalId: "22049156789"
+      accounts:
+        - type: CURRENT
+          product: hverdagskonto
+          initialBalance: 67300.25
+          generateTransactions: 35
+        - type: SAVINGS
+          product: trollspar
+          initialBalance: 215000.00
+      cards:
+        - type: DEBIT
+          linkedAccount: 0
+    - firstName: Lars
+      lastName: Svendsen
+      nationalId: "05079834567"
+      accounts:
+        - type: CURRENT
+          product: ungdomskonto
+          initialBalance: 4520.00
+          generateTransactions: 20

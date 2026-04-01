@@ -1,0 +1,46 @@
+tenant:
+  id: fjordbank
+  bankName: Fjordbanken
+  bankCode: "8601"
+  country: "NO"
+  currency: "NOK"
+  branding:
+    primaryColor: "#0A5E8C"
+    secondaryColor: "#E8F4F8"
+    logo: "fjordbank-logo.svg"
+    tagline: "Din bank ved fjorden"
+products:
+  - id: brukskonto
+    name: "Brukskonto"
+    type: CURRENT
+    fees: { monthly: 0 }
+    features: { onlinePayments: true, debitCard: true }
+  - id: sparekonto
+    name: "Sparekonto Pluss"
+    type: SAVINGS
+    interestRate: 3.25
+    features: { maxWithdrawalsPerMonth: 6 }
+demoData:
+  customers:
+    - firstName: Ola
+      lastName: Nordmann
+      nationalId: "01019012345"
+      accounts:
+        - type: CURRENT
+          product: brukskonto
+          initialBalance: 45230.50
+          generateTransactions: 50
+        - type: SAVINGS
+          product: sparekonto
+          initialBalance: 125000.00
+      cards:
+        - type: DEBIT
+          linkedAccount: 0
+    - firstName: Kari
+      lastName: Hansen
+      nationalId: "15038945678"
+      accounts:
+        - type: CURRENT
+          product: brukskonto
+          initialBalance: 18750.00
+          generateTransactions: 30

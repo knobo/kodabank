@@ -1,0 +1,90 @@
+# =============================================================================
+# KodaBank Helm Chart — Default Values
+# =============================================================================
+# Copy this file and override what you need in values-local.yaml or
+# values-production.yaml. All passwords below MUST be changed for production.
+# =============================================================================
+
+# Docker image registry and tag for all kodabank images.
+# Images are published to ghcr.io/knobo/ by the CI/CD pipeline.
+imageRegistry: ghcr.io/knobo
+imageTag: latest
+imagePullPolicy: IfNotPresent
+
+# -----------------------------------------------------------------------------
+# Hostnames
+# frontend + BFF share the same host (path-based routing via Ingress)
+# Keycloak gets its own subdomain
+# -----------------------------------------------------------------------------
+host: kodabank.example.com
+keycloakHost: keycloak.example.com
+
+# -----------------------------------------------------------------------------
+# Ingress
+# -----------------------------------------------------------------------------
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  tls:
+    enabled: false
+    # When enabled, provide a secret name (cert-manager will populate it):
+    secretName: kodabank-tls
+    keycloakSecretName: kodabank-keycloak-tls
+
+# -----------------------------------------------------------------------------
+# Keycloak
+# -----------------------------------------------------------------------------
+keycloak:
+  adminUser: admin
+  adminPassword: changeme  # CHANGE IN PRODUCTION
+  realm: kodabank
+  # These must match the values in the imported realm (realm-export.json)
+  clientId: kodabank-bff
+  clientSecret: bff-secret  # CHANGE IN PRODUCTION
+
+# -----------------------------------------------------------------------------
+# PostgreSQL — three separate instances
+# -----------------------------------------------------------------------------
+postgres:
+  eventstore:
+    database: kodastore
+    username: kodastore
+    password: kodastore  # CHANGE IN PRODUCTION
+    storage: 5Gi
+  readmodel:
+    database: kodabank_readmodel
+    username: kodabank
+    password: kodabank  # CHANGE IN PRODUCTION
+    storage: 5Gi
+  keycloak:
+    database: keycloak
+    username: keycloak
+    password: keycloak  # CHANGE IN PRODUCTION
+    storage: 1Gi
+
+# Storage class for PersistentVolumeClaims. Leave empty to use cluster default.
+storageClass: ""
+
+# -----------------------------------------------------------------------------
+# Service resource defaults (applied to all backend services unless overridden)
+# -----------------------------------------------------------------------------
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 512Mi
+    cpu: 500m
+
+# Per-service replica counts
+replicas:
+  kodastore: 1
+  core: 1
+  clearing: 1
+  bff: 1
+  admin: 1
+  paymentGateway: 1
+  nettbank: 1
+  keycloak: 1

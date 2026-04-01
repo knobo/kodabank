@@ -1,0 +1,25 @@
+server:
+  port: ${SERVER_PORT:8089}
+
+kodastore:
+  url: ${KODASTORE_URL:http://localhost:8080}
+
+kodabank:
+  core-url: ${KODABANK_CORE_URL:http://localhost:8086}
+
+spring:
+  application:
+    name: kodabank-payment-gateway
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+  threads:
+    virtual:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

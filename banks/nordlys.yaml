@@ -1,0 +1,68 @@
+tenant:
+  id: nordlys
+  bankName: Nordlys Sparebank
+  bankCode: "8603"
+  country: "NO"
+  currency: "NOK"
+  branding:
+    primaryColor: "#6B1D7A"
+    secondaryColor: "#F3E5F5"
+    logo: "nordlys-logo.svg"
+    tagline: "Lys i nord"
+products:
+  - id: dagligkonto
+    name: "Dagligkonto"
+    type: CURRENT
+    fees: { monthly: 0 }
+    features: { onlinePayments: true, debitCard: true }
+  - id: nordlysspar
+    name: "Nordlys Sparekonto"
+    type: SAVINGS
+    interestRate: 3.10
+    features: { maxWithdrawalsPerMonth: 6 }
+  - id: hoyrentekonto
+    name: "Hoyrentekonto"
+    type: SAVINGS
+    interestRate: 4.00
+    features: { maxWithdrawalsPerMonth: 2, minimumBalance: 50000 }
+demoData:
+  customers:
+    - firstName: Astrid
+      lastName: Johansen
+      nationalId: "30119067890"
+      accounts:
+        - type: CURRENT
+          product: dagligkonto
+          initialBalance: 28900.50
+          generateTransactions: 45
+        - type: SAVINGS
+          product: nordlysspar
+          initialBalance: 156000.00
+        - type: SAVINGS
+          product: hoyrentekonto
+          initialBalance: 320000.00
+      cards:
+        - type: DEBIT
+          linkedAccount: 0
+    - firstName: Erik
+      lastName: Haugen
+      nationalId: "18057523456"
+      accounts:
+        - type: CURRENT
+          product: dagligkonto
+          initialBalance: 51200.00
+          generateTransactions: 25
+        - type: SAVINGS
+          product: hoyrentekonto
+          initialBalance: 75000.00
+      cards:
+        - type: DEBIT
+          linkedAccount: 0
+    - firstName: Solveig
+      lastName: Dahl
+      nationalId: "09028498765"
+      accounts:
+        - type: CURRENT
+          product: dagligkonto
+          initialBalance: 12340.75
+          generateTransactions: 15

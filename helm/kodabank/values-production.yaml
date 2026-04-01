@@ -1,0 +1,62 @@
+# =============================================================================
+# Production — kodabank.knobo.no (WireGuard + remote k8s)
+# =============================================================================
+# Usage:
+#   helm install kodabank ./helm/kodabank \
+#     -f helm/kodabank/values-production.yaml \
+#     --set postgres.eventstore.password=<secret> \
+#     --set postgres.readmodel.password=<secret> \
+#     --set postgres.keycloak.password=<secret> \
+#     --set keycloak.adminPassword=<secret> \
+#     --set keycloak.clientSecret=<secret>
+#
+# Or use a sealed secrets / external-secrets operator for passwords.
+#
+# CI/CD note:
+#   The nettbank image must be built with:
+#     VITE_BFF_URL=https://kodabank.knobo.no
+#   Set this as a GitHub Actions variable: vars.VITE_BFF_URL
+# =============================================================================
+
+host: kodabank.knobo.no
+keycloakHost: keycloak.kodabank.knobo.no
+
+imageTag: latest  # Pin to a specific SHA or version in production, e.g. "sha-abc1234"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  tls:
+    enabled: true
+    secretName: kodabank-tls
+    keycloakSecretName: kodabank-keycloak-tls
+
+# CHANGE ALL PASSWORDS — use --set or a secret store, never commit plaintext
+keycloak:
+  adminUser: admin
+  adminPassword: CHANGE_ME
+  realm: kodabank
+  clientId: kodabank-bff
+  clientSecret: CHANGE_ME
+
+postgres:
+  eventstore:
+    password: CHANGE_ME
+    storage: 20Gi
+  readmodel:
+    password: CHANGE_ME
+    storage: 20Gi
+  keycloak:
+    password: CHANGE_ME
+    storage: 5Gi
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 768Mi
+    cpu: 1000m

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kodabank.fullname" . }}-bff
+  labels:
+    {{- include "kodabank.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas.bff }}
+  selector:
+    matchLabels:
+      {{- include "kodabank.selectorLabels" (dict "component" "bff" "context" .) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kodabank.selectorLabels" (dict "component" "bff" "context" .) | nindent 8 }}
+    spec:
+      containers:
+        - name: kodabank-bff
+          image: {{ include "kodabank.image" (dict "name" "kodabank-bff" "context" .) }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          env:
+            - name: SERVER_PORT
+              value: "8085"
+            - name: KODABANK_CORE_URL
+              value: http://{{ include "kodabank.fullname" . }}-core:8086
+            - name: KODABANK_CLEARING_URL
+              value: http://{{ include "kodabank.fullname" . }}-clearing:8087
+            - name: KODABANK_ADMIN_URL
+              value: http://{{ include "kodabank.fullname" . }}-admin:8088
+            - name: KODABANK_PAYMENT_GATEWAY_URL
+              value: http://{{ include "kodabank.fullname" . }}-payment-gateway:8089
+            # External URLs (browser-visible)
+            - name: KODABANK_FRONTEND_URL
+              value: {{ include "kodabank.frontendUrl" . }}
+            - name: KODABANK_BFF_BASE_URL
+              value: {{ include "kodabank.bffBaseUrl" . }}
+            # Read model database
+            - name: KODABANK_READMODEL_JDBC_URL
+              value: jdbc:postgresql://{{ include "kodabank.fullname" . }}-postgres-readmodel:5432/{{ .Values.postgres.readmodel.database }}
+            - name: KODABANK_READMODEL_DB_USER
+              value: {{ .Values.postgres.readmodel.username }}
+            - name: KODABANK_READMODEL_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kodabank.fullname" . }}-postgres
+                  key: readmodel-password
+            # Keycloak OIDC
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
+              value: {{ include "kodabank.keycloakIssuerUri" . }}
+          ports:
+            - containerPort: 8085
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kodabank.fullname" . }}-bff
+  labels:
+    {{- include "kodabank.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "kodabank.selectorLabels" (dict "component" "bff" "context" .) | nindent 4 }}
+  ports:
+    - port: 8085
+      targetPort: 8085

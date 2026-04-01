@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kodabank.fullname" . }}-nettbank
+  labels:
+    {{- include "kodabank.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas.nettbank }}
+  selector:
+    matchLabels:
+      {{- include "kodabank.selectorLabels" (dict "component" "nettbank" "context" .) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kodabank.selectorLabels" (dict "component" "nettbank" "context" .) | nindent 8 }}
+    spec:
+      containers:
+        - name: nettbank
+          image: {{ include "kodabank.image" (dict "name" "nettbank" "context" .) }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          env:
+            - name: PORT
+              value: "3000"
+            # VITE_BFF_URL is baked into the image at build time.
+            # The image should be built with VITE_BFF_URL set to the external host.
+            # See: .github/workflows/build-images.yml (VITE_BFF_URL build-arg)
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kodabank.fullname" . }}-nettbank
+  labels:
+    {{- include "kodabank.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "kodabank.selectorLabels" (dict "component" "nettbank" "context" .) | nindent 4 }}
+  ports:
+    - port: 3000
+      targetPort: 3000

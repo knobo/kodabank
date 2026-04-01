@@ -1,0 +1,41 @@
+# =============================================================================
+# Local Kubernetes testing (minikube / k3s / kind)
+# =============================================================================
+# Usage:
+#   helm install kodabank ./helm/kodabank -f helm/kodabank/values-local.yaml
+#
+# Prerequisites:
+#   - nginx ingress controller installed
+#   - Add to /etc/hosts:
+#       127.0.0.1  kodabank.local
+#       127.0.0.1  keycloak.kodabank.local
+#   - For minikube: run `minikube tunnel` in a separate terminal
+#   - For k3s: the load balancer IP is usually 127.0.0.1 with svclb
+# =============================================================================
+
+host: kodabank.local
+keycloakHost: keycloak.kodabank.local
+
+ingress:
+  enabled: true
+  className: traefik  # k3s ships with Traefik by default
+  tls:
+    enabled: false
+
+# Use smaller storage for local testing
+postgres:
+  eventstore:
+    storage: 1Gi
+  readmodel:
+    storage: 1Gi
+  keycloak:
+    storage: 256Mi
+
+# Smaller resource requests for a constrained local cluster
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 50m
+  limits:
+    memory: 512Mi
+    cpu: 500m

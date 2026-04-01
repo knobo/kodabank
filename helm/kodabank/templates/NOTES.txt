@@ -1,0 +1,53 @@
+KodaBank has been deployed!
+
+===========================================================================
+IMPORTANT: After first install, update Keycloak redirect URIs
+===========================================================================
+
+The bundled realm import has redirect URIs for localhost development.
+For your deployment at {{ include "kodabank.frontendUrl" . }}, add:
+
+  {{ include "kodabank.bffBaseUrl" . }}/api/v1/auth/callback
+
+to the "kodabank-bff" client's Valid Redirect URIs in Keycloak:
+
+  Keycloak Admin Console: http://{{ .Values.keycloakHost }}
+  Username: {{ .Values.keycloak.adminUser }}
+  Password: (see secret {{ include "kodabank.fullname" . }}-keycloak)
+
+Steps:
+  1. Open Keycloak Admin Console
+  2. Select realm "{{ .Values.keycloak.realm }}"
+  3. Clients → kodabank-bff → Settings
+  4. Add "{{ include "kodabank.bffBaseUrl" . }}/api/v1/auth/callback" to Valid Redirect URIs
+  5. Add "{{ include "kodabank.frontendUrl" . }}" to Web Origins
+  6. Save
+
+===========================================================================
+Application URLs
+===========================================================================
+
+  Frontend:  {{ include "kodabank.frontendUrl" . }}
+  Keycloak:  http{{ if .Values.ingress.tls.enabled }}s{{ end }}://{{ .Values.keycloakHost }}
+
+{{- if not .Values.ingress.enabled }}
+
+NOTE: Ingress is disabled. Use port-forwarding to access services:
+
+  kubectl port-forward svc/{{ include "kodabank.fullname" . }}-nettbank 3000:3000
+  kubectl port-forward svc/{{ include "kodabank.fullname" . }}-bff 8085:8085
+  kubectl port-forward svc/{{ include "kodabank.fullname" . }}-keycloak 8180:8080
+{{- end }}
+
+===========================================================================
+Troubleshooting
+===========================================================================
+
+  # Check all pods
+  kubectl get pods -l app.kubernetes.io/instance={{ .Release.Name }}
+
+  # Check BFF logs
+  kubectl logs -l app.kubernetes.io/name=bff,app.kubernetes.io/instance={{ .Release.Name }}
+
+  # Check Keycloak logs
+  kubectl logs -l app.kubernetes.io/name=keycloak,app.kubernetes.io/instance={{ .Release.Name }}

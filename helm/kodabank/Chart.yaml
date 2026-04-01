@@ -1,0 +1,25 @@
+apiVersion: v2
+name: kodabank
+description: >
+  KodaBank — an open-source Banking-as-a-Service platform built on event sourcing.
+  Deploys the full stack: KodaStore event store, Keycloak IAM, all backend microservices,
+  and the Nettbank frontend.
+
+type: application
+version: 0.1.0
+appVersion: "latest"
+
+keywords:
+  - banking
+  - event-sourcing
+  - fintech
+  - open-source
+
+home: https://github.com/knobo/kodabank
+sources:
+  - https://github.com/knobo/kodabank
+  - https://github.com/knobo/kodastore
+
+maintainers:
+  - name: knobo
+    url: https://github.com/knobo

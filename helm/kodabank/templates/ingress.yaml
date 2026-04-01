@@ -1,0 +1,87 @@
+{{- if .Values.ingress.enabled }}
+# Ingress for the main app: frontend + BFF (path-based routing on same host)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "kodabank.fullname" . }}-app
+  labels:
+    {{- include "kodabank.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.host }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.host }}
+      http:
+        paths:
+          # BFF handles all /api/* and /go/* paths
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "kodabank.fullname" . }}-bff
+                port:
+                  number: 8085
+          - path: /go
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "kodabank.fullname" . }}-bff
+                port:
+                  number: 8085
+          # Everything else goes to the frontend SSR server
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "kodabank.fullname" . }}-nettbank
+                port:
+                  number: 3000
+---
+# Separate Ingress for Keycloak (own subdomain)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "kodabank.fullname" . }}-keycloak
+  labels:
+    {{- include "kodabank.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.keycloakHost }}
+      secretName: {{ .Values.ingress.tls.keycloakSecretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.keycloakHost }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "kodabank.fullname" . }}-keycloak
+                port:
+                  number: 8080
+{{- end }}

@@ -1,0 +1,32 @@
+server:
+  port: ${SERVER_PORT:8088}
+
+kodastore:
+  url: ${KODASTORE_URL:http://localhost:8080}
+
+keycloak:
+  url: ${KEYCLOAK_URL:http://localhost:8180}
+  realm: ${KEYCLOAK_REALM:kodabank}
+  admin-client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:admin-secret}
+
+spring:
+  application:
+    name: kodabank-admin
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:8180/realms/kodabank}
+  threads:
+    virtual:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

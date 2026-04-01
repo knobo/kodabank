@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kodabank.fullname" . }}-core
+  labels:
+    {{- include "kodabank.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas.core }}
+  selector:
+    matchLabels:
+      {{- include "kodabank.selectorLabels" (dict "component" "core" "context" .) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kodabank.selectorLabels" (dict "component" "core" "context" .) | nindent 8 }}
+    spec:
+      containers:
+        - name: kodabank-core
+          image: {{ include "kodabank.image" (dict "name" "kodabank-core" "context" .) }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          env:
+            - name: SERVER_PORT
+              value: "8086"
+            - name: KODASTORE_URL
+              value: http://{{ include "kodabank.fullname" . }}-kodastore:8080
+            - name: KODABANK_CLEARING_URL
+              value: http://{{ include "kodabank.fullname" . }}-clearing:8087
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://{{ include "kodabank.fullname" . }}-postgres-readmodel:5432/{{ .Values.postgres.readmodel.database }}
+            - name: SPRING_DATASOURCE_USERNAME
+              value: {{ .Values.postgres.readmodel.username }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kodabank.fullname" . }}-postgres
+                  key: readmodel-password
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+              value: {{ include "kodabank.keycloakIssuerUri" . }}
+          ports:
+            - containerPort: 8086
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8086
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kodabank.fullname" . }}-core
+  labels:
+    {{- include "kodabank.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "kodabank.selectorLabels" (dict "component" "core" "context" .) | nindent 4 }}
+  ports:
+    - port: 8086
+      targetPort: 8086

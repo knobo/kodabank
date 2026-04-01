@@ -1,0 +1,36 @@
+server:
+  port: ${SERVER_PORT:8086}
+
+kodastore:
+  url: ${KODASTORE_URL:http://localhost:8080}
+
+kodabank:
+  clearing-url: ${KODABANK_CLEARING_URL:http://localhost:8087}
+
+spring:
+  application:
+    name: kodabank-core
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/kodabank_readmodel}
+    username: ${SPRING_DATASOURCE_USERNAME:kodabank}
+    password: ${SPRING_DATASOURCE_PASSWORD:kodabank}
+  flyway:
+    enabled: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:8180/realms/kodabank}
+  threads:
+    virtual:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

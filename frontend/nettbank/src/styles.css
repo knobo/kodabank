@@ -1,0 +1,80 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-bank-50: #f0f7ff;
+  --color-bank-100: #e0efff;
+  --color-bank-200: #bae0ff;
+  --color-bank-300: #7cc8ff;
+  --color-bank-400: #36adff;
+  --color-bank-500: #0c93f1;
+  --color-bank-600: #0074cd;
+  --color-bank-700: #005ca6;
+  --color-bank-800: #034f89;
+  --color-bank-900: #094271;
+  --color-bank-950: #06294b;
+  --color-success: #16a34a;
+  --color-danger: #dc2626;
+  --color-warning: #f59e0b;
+}
+
+:root {
+  --tenant-primary: #0074cd;
+  --tenant-primary-dark: #005ca6;
+  --tenant-primary-light: #e0efff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: #f8fafc;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-dot {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+  animation: fade-in 400ms ease-out both;
+}
+
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+
+.bankid-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--tenant-primary);
+  display: inline-block;
+  animation: pulse-dot 1.4s infinite ease-in-out both;
+}
+
+.bankid-dot:nth-child(1) { animation-delay: -0.32s; }
+.bankid-dot:nth-child(2) { animation-delay: -0.16s; }
+.bankid-dot:nth-child(3) { animation-delay: 0; }

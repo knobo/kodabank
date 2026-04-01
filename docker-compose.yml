@@ -1,0 +1,209 @@
+services:
+  # === Infrastructure ===
+
+  postgres-kodastore:
+    image: postgres:17
+    container_name: kodabank-pg-eventstore
+    environment:
+      POSTGRES_DB: kodastore
+      POSTGRES_USER: kodastore
+      POSTGRES_PASSWORD: kodastore
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_kodastore:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kodastore"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-readmodel:
+    image: postgres:17
+    container_name: kodabank-pg-readmodel
+    environment:
+      POSTGRES_DB: kodabank_readmodel
+      POSTGRES_USER: kodabank
+      POSTGRES_PASSWORD: kodabank
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_readmodel:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init-readmodel.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kodabank"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-keycloak:
+    image: postgres:17
+    container_name: kodabank-pg-keycloak
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - pg_keycloak:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.6
+    container_name: kodabank-keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev --import-realm
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./infrastructure/keycloak/realm-export.json:/opt/keycloak/data/import/kodabank-realm.json
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+
+  # === KodaStore ===
+
+  kodastore:
+    build:
+      context: ../kodastore
+      dockerfile: infrastructure/Dockerfile
+    container_name: kodabank-kodastore
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-kodastore:5432/kodastore
+      SPRING_DATASOURCE_USERNAME: kodastore
+      SPRING_DATASOURCE_PASSWORD: kodastore
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres-kodastore:
+        condition: service_healthy
+
+  # === Backend Services ===
+
+  kodabank-core:
+    build:
+      context: ./backend
+      dockerfile: kodabank-core/Dockerfile
+    container_name: kodabank-core
+    environment:
+      KODASTORE_URL: http://kodastore:8080
+      KODABANK_CLEARING_URL: http://kodabank-clearing:8083
+      SERVER_PORT: 8086
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-readmodel:5432/kodabank_readmodel
+      SPRING_DATASOURCE_USERNAME: kodabank
+      SPRING_DATASOURCE_PASSWORD: kodabank
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/kodabank
+    ports:
+      - "8086:8086"
+    depends_on:
+      - kodastore
+      - kodabank-clearing
+      - postgres-readmodel
+      - keycloak
+
+  kodabank-clearing:
+    build:
+      context: ./backend
+      dockerfile: kodabank-clearing/Dockerfile
+    container_name: kodabank-clearing
+    environment:
+      KODASTORE_URL: http://kodastore:8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-readmodel:5432/kodabank_readmodel
+      SPRING_DATASOURCE_USERNAME: kodabank
+      SPRING_DATASOURCE_PASSWORD: kodabank
+    ports:
+      - "8083:8083"
+    depends_on:
+      - kodastore
+      - postgres-readmodel
+
+  kodabank-payment-gateway:
+    build:
+      context: ./backend
+      dockerfile: kodabank-payment-gateway/Dockerfile
+    container_name: kodabank-payment-gateway
+    environment:
+      SERVER_PORT: 8089
+      KODASTORE_URL: http://kodastore:8080
+      KODABANK_CORE_URL: http://kodabank-core:8086
+    ports:
+      - "8089:8089"
+    depends_on:
+      kodastore:
+        condition: service_healthy
+
+  kodabank-bff:
+    build:
+      context: ./backend
+      dockerfile: kodabank-bff/Dockerfile
+    container_name: kodabank-bff
+    environment:
+      KODABANK_CORE_URL: http://kodabank-core:8086
+      KODABANK_CLEARING_URL: http://kodabank-clearing:8083
+      KODABANK_ADMIN_URL: http://kodabank-admin:8084
+      KODABANK_READMODEL_JDBC_URL: jdbc:postgresql://postgres-readmodel:5432/kodabank_readmodel
+      KODABANK_READMODEL_DB_USER: kodabank
+      KODABANK_READMODEL_DB_PASSWORD: kodabank
+      SERVER_PORT: 8085
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/kodabank
+    ports:
+      - "8085:8085"
+    depends_on:
+      - kodabank-core
+      - kodabank-clearing
+      - postgres-readmodel
+      - keycloak
+
+  kodabank-admin:
+    build:
+      context: ./backend
+      dockerfile: kodabank-admin/Dockerfile
+    container_name: kodabank-admin
+    environment:
+      KODASTORE_URL: http://kodastore:8080
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: kodabank
+      KEYCLOAK_ADMIN_CLIENT_SECRET: admin-secret
+    ports:
+      - "8084:8084"
+    depends_on:
+      - kodastore
+      - keycloak
+
+  # === Frontend ===
+
+  nettbank-frontend:
+    build:
+      context: ./frontend/nettbank
+    container_name: kodabank-nettbank
+    environment:
+      VITE_BFF_URL: http://localhost:8085
+    ports:
+      - "3100:3100"
+    depends_on:
+      - kodabank-bff
+
+  admin-frontend:
+    build:
+      context: ./frontend/admin
+    container_name: kodabank-admin-ui
+    environment:
+      VITE_ADMIN_URL: http://localhost:8084
+    ports:
+      - "3001:3001"
+    depends_on:
+      - kodabank-admin
+
+volumes:
+  pg_kodastore:
+  pg_readmodel:
+  pg_keycloak:
