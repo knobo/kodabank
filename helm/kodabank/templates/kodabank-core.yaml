@@ -14,6 +14,7 @@ spec:
       labels:
         {{- include "kodabank.selectorLabels" (dict "component" "core" "context" .) | nindent 8 }}
     spec:
+      {{- include "kodabank.imagePullSecrets" . | nindent 6 }}
       containers:
         - name: kodabank-core
           image: {{ include "kodabank.image" (dict "name" "kodabank-core" "context" .) }}

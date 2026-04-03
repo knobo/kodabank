@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { registerBank, fetchMe } from '../lib/api'
+import { registerBank, fetchMe, BFF_URL } from '../lib/api'
 import type { RegisterBankData, RegisterBankResult, AuthUser } from '../lib/api'
 
 export const Route = createFileRoute('/create-bank')({
@@ -77,7 +77,7 @@ function CreateBankPage() {
   const [authChecked, setAuthChecked] = useState(false)
 
   useEffect(() => {
-    const bffUrl = import.meta.env.VITE_BFF_URL || 'http://localhost:8085'
+    const bffUrl = BFF_URL
     fetchMe().then((u) => {
       setUser(u)
       setAuthChecked(true)
@@ -132,7 +132,7 @@ function CreateBankPage() {
     } catch (err) {
       if (err instanceof Error && err.message.includes('401')) {
         // Not logged in, redirect to BFF login
-        const bffUrl = import.meta.env.VITE_BFF_URL || 'http://localhost:8085'
+        const bffUrl = BFF_URL
         window.location.href = `${bffUrl}/api/v1/auth/login?returnTo=/create-bank`
         return
       }

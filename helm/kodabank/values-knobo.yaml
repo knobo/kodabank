@@ -1,0 +1,35 @@
+# =============================================================================
+# kodabank.knobo.no — k3s on fixnum via WireGuard + enjord.no nginx proxy
+# =============================================================================
+# Usage:
+#   helm install kodabank ./helm/kodabank -f helm/kodabank/values-knobo.yaml
+# =============================================================================
+
+host: kodabank.knobo.no
+keycloakHost: keycloak.kodabank.knobo.no
+
+imagePullSecrets:
+  - name: ghcr-secret
+
+ingress:
+  enabled: true
+  className: traefik  # k3s built-in
+  tls:
+    enabled: false  # TLS is terminated at enjord.no nginx proxy
+
+# Moderate storage for a personal deployment
+postgres:
+  eventstore:
+    storage: 5Gi
+  readmodel:
+    storage: 5Gi
+  keycloak:
+    storage: 1Gi
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 768Mi
+    cpu: 1000m

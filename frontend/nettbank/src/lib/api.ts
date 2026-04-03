@@ -1,4 +1,4 @@
-const BFF_URL = import.meta.env.VITE_BFF_URL || 'http://localhost:8085';
+export const BFF_URL = import.meta.env.VITE_BFF_URL || 'http://localhost:8085';
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const url = `${BFF_URL}${path}`;

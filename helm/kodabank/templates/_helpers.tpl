@@ -52,40 +52,41 @@ http://{{ include "kodabank.fullname" .context }}-{{ .component }}:{{ .port }}
 
 {{/*
 Keycloak issuer URI (external URL used as JWT issuer)
+Always https — TLS is terminated at the external proxy (enjord.no)
 */}}
 {{- define "kodabank.keycloakIssuerUri" -}}
-{{- if .Values.ingress.tls.enabled -}}
 https://{{ .Values.keycloakHost }}/realms/{{ .Values.keycloak.realm }}
-{{- else -}}
-http://{{ .Values.keycloakHost }}/realms/{{ .Values.keycloak.realm }}
-{{- end -}}
 {{- end }}
 
 {{/*
-Frontend URL (external)
+Frontend URL (external) — always https when behind a TLS-terminating proxy
 */}}
 {{- define "kodabank.frontendUrl" -}}
-{{- if .Values.ingress.tls.enabled -}}
 https://{{ .Values.host }}
-{{- else -}}
-http://{{ .Values.host }}
-{{- end -}}
 {{- end }}
 
 {{/*
 BFF base URL (external, same host as frontend)
 */}}
 {{- define "kodabank.bffBaseUrl" -}}
-{{ include "kodabank.frontendUrl" . }}
+https://{{ .Values.host }}
 {{- end }}
 
 {{/*
-Storage class helper
+Image pull secrets
+*/}}
+{{- define "kodabank.imagePullSecrets" -}}
+{{- with .Values.imagePullSecrets }}
+imagePullSecrets:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end }}
+
+{{/*
+Storage class helper — omit the field entirely to use cluster default
 */}}
 {{- define "kodabank.storageClass" -}}
-{{- if .Values.storageClass -}}
+{{- if .Values.storageClass }}
 storageClassName: {{ .Values.storageClass }}
-{{- else -}}
-storageClassName: ""
-{{- end -}}
+{{- end }}
 {{- end }}

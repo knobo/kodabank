@@ -9,6 +9,7 @@ import {
   updateBankAdminSettings,
 } from '../../lib/api'
 import type { Branding, Membership, BankAdminSettings } from '../../lib/api'
+import { BFF_URL } from '../../lib/api'
 
 export const Route = createFileRoute('/$tenant/admin')({
   component: BankAdminPage,
@@ -322,7 +323,7 @@ function BankAdminPage() {
                 URL Alias
               </label>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-500 whitespace-nowrap">localhost:8085/go/</span>
+                <span className="text-sm text-slate-500 whitespace-nowrap">{new URL(BFF_URL).host}/go/</span>
                 <input
                   type="text"
                   value={urlAliasInput}
@@ -349,8 +350,8 @@ function BankAdminPage() {
                   <p className="text-xs text-slate-500 mb-1">Shareable login link</p>
                   <p className="font-mono text-sm text-slate-200 truncate">
                     {settings?.urlAlias
-                      ? `http://localhost:8085/go/${settings.urlAlias}`
-                      : `http://localhost:3100/${tenant}/login`}
+                      ? `${BFF_URL}/go/${settings.urlAlias}`
+                      : `${BFF_URL}/${tenant}/login`}
                   </p>
                 </div>
                 <button

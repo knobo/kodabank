@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect, useRef } from 'react'
 import type { PublicBank, AuthUser, MyBank } from '../lib/api'
-import { fetchPublicBanks, fetchMe, fetchMyBanks } from '../lib/api'
+import { fetchPublicBanks, fetchMe, fetchMyBanks, BFF_URL } from '../lib/api'
 
 export const Route = createFileRoute('/')({
   component: LandingPage,
@@ -155,7 +155,7 @@ function LandingPage() {
             </>
           ) : (
             <a
-              href="http://localhost:8085/api/v1/auth/login"
+              href={`${BFF_URL}/api/v1/auth/login`}
               className="rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2 text-sm font-medium text-slate-200 no-underline transition hover:border-slate-600 hover:bg-slate-800"
             >
               Log in

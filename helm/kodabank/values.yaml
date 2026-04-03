@@ -11,6 +11,11 @@ imageRegistry: ghcr.io/knobo
 imageTag: latest
 imagePullPolicy: IfNotPresent
 
+# Image pull secrets for private registries (e.g. ghcr.io)
+# Create with: kubectl create secret docker-registry ghcr-secret ...
+imagePullSecrets: []
+  # - name: ghcr-secret
+
 # -----------------------------------------------------------------------------
 # Hostnames
 # frontend + BFF share the same host (path-based routing via Ingress)

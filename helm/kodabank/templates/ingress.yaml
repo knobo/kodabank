@@ -6,12 +6,16 @@ metadata:
   name: {{ include "kodabank.fullname" . }}-app
   labels:
     {{- include "kodabank.labels" . | nindent 4 }}
+  {{- if or .Values.ingress.annotations (eq .Values.ingress.className "nginx") }}
   annotations:
+    {{- if eq .Values.ingress.className "nginx" }}
     nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    {{- end }}
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+  {{- end }}
 spec:
   {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}
@@ -57,12 +61,16 @@ metadata:
   name: {{ include "kodabank.fullname" . }}-keycloak
   labels:
     {{- include "kodabank.labels" . | nindent 4 }}
+  {{- if or .Values.ingress.annotations (eq .Values.ingress.className "nginx") }}
   annotations:
+    {{- if eq .Values.ingress.className "nginx" }}
     nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    {{- end }}
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+  {{- end }}
 spec:
   {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}

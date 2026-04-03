@@ -14,6 +14,7 @@ spec:
       labels:
         {{- include "kodabank.selectorLabels" (dict "component" "nettbank" "context" .) | nindent 8 }}
     spec:
+      {{- include "kodabank.imagePullSecrets" . | nindent 6 }}
       containers:
         - name: nettbank
           image: {{ include "kodabank.image" (dict "name" "nettbank" "context" .) }}
@@ -21,9 +22,9 @@ spec:
           env:
             - name: PORT
               value: "3000"
-            # VITE_BFF_URL is baked into the image at build time.
-            # The image should be built with VITE_BFF_URL set to the external host.
-            # See: .github/workflows/build-images.yml (VITE_BFF_URL build-arg)
+            # VITE_BFF_URL needed at runtime for SSR-rendered HTML
+            - name: VITE_BFF_URL
+              value: {{ include "kodabank.bffBaseUrl" . }}
           ports:
             - containerPort: 3000
           readinessProbe:

@@ -24,6 +24,7 @@ spec:
       labels:
         {{- include "kodabank.selectorLabels" (dict "component" "keycloak" "context" .) | nindent 8 }}
     spec:
+      {{- include "kodabank.imagePullSecrets" . | nindent 6 }}
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:26.5.6
@@ -47,17 +48,15 @@ spec:
                 secretKeyRef:
                   name: {{ include "kodabank.fullname" . }}-keycloak
                   key: admin-password
-            # Set the external hostname so JWT issuer URIs are correct
+            # External hostname and proxy configuration
             - name: KC_HOSTNAME
-              value: {{ .Values.keycloakHost }}
+              value: https://{{ .Values.keycloakHost }}
             - name: KC_HOSTNAME_STRICT
-              value: "false"
-            {{- if not .Values.ingress.tls.enabled }}
-            - name: KC_HOSTNAME_STRICT_HTTPS
               value: "false"
             - name: KC_HTTP_ENABLED
               value: "true"
-            {{- end }}
+            - name: KC_PROXY_HEADERS
+              value: xforwarded
           ports:
             - containerPort: 8080
           readinessProbe:
