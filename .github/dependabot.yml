@@ -1,0 +1,46 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /backend
+    schedule:
+      interval: weekly
+    groups:
+      gradle:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directories: ["/frontend/nettbank", "/frontend/webshop"]
+    schedule:
+      interval: weekly
+    groups:
+      npm:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker
+    directories: ["/backend/kodabank-admin", "/backend/kodabank-bff", "/backend/kodabank-clearing", "/backend/kodabank-core", "/backend/kodabank-payment-gateway", "/frontend/nettbank"]
+    schedule:
+      interval: weekly
+    groups:
+      docker:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      docker_compose:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github_actions:
+        patterns: ["*"]
+        update-types: [minor, patch]
