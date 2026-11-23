@@ -9,24 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as CreateBankRouteImport } from './routes/create-bank'
-import { Route as TenantRouteRouteImport } from './routes/$tenant/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TenantTransfersRouteImport } from './routes/$tenant/transfers'
-import { Route as TenantLoginRouteImport } from './routes/$tenant/login'
-import { Route as TenantJoinRouteImport } from './routes/$tenant/join'
-import { Route as TenantDashboardRouteImport } from './routes/$tenant/dashboard'
-import { Route as TenantCardsRouteImport } from './routes/$tenant/cards'
+import { Route as TenantRouteRouteImport } from './routes/$tenant/route'
+import { Route as CreateBankRouteImport } from './routes/create-bank'
 import { Route as TenantAdminRouteImport } from './routes/$tenant/admin'
-import { Route as TenantPaymentsIndexRouteImport } from './routes/$tenant/payments/index'
+import { Route as TenantCardsRouteImport } from './routes/$tenant/cards'
+import { Route as TenantDashboardRouteImport } from './routes/$tenant/dashboard'
+import { Route as TenantJoinRouteImport } from './routes/$tenant/join'
+import { Route as TenantLoginRouteImport } from './routes/$tenant/login'
+import { Route as TenantTransfersRouteImport } from './routes/$tenant/transfers'
 import { Route as TenantAccountsIndexRouteImport } from './routes/$tenant/accounts/index'
-import { Route as TenantPaymentsNewRouteImport } from './routes/$tenant/payments/new'
-import { Route as TenantCheckoutOrderIdRouteImport } from './routes/$tenant/checkout.$orderId'
 import { Route as TenantAccountsIdRouteImport } from './routes/$tenant/accounts/$id'
+import { Route as TenantCheckoutOrderIdRouteImport } from './routes/$tenant/checkout.$orderId'
+import { Route as TenantPaymentsIndexRouteImport } from './routes/$tenant/payments/index'
+import { Route as TenantPaymentsNewRouteImport } from './routes/$tenant/payments/new'
 
-const CreateBankRoute = CreateBankRouteImport.update({
-  id: '/create-bank',
-  path: '/create-bank',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TenantRouteRoute = TenantRouteRouteImport.update({
@@ -34,29 +34,14 @@ const TenantRouteRoute = TenantRouteRouteImport.update({
   path: '/$tenant',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CreateBankRoute = CreateBankRouteImport.update({
+  id: '/create-bank',
+  path: '/create-bank',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TenantTransfersRoute = TenantTransfersRouteImport.update({
-  id: '/transfers',
-  path: '/transfers',
-  getParentRoute: () => TenantRouteRoute,
-} as any)
-const TenantLoginRoute = TenantLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => TenantRouteRoute,
-} as any)
-const TenantJoinRoute = TenantJoinRouteImport.update({
-  id: '/join',
-  path: '/join',
-  getParentRoute: () => TenantRouteRoute,
-} as any)
-const TenantDashboardRoute = TenantDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const TenantAdminRoute = TenantAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => TenantRouteRoute,
 } as any)
 const TenantCardsRoute = TenantCardsRouteImport.update({
@@ -64,14 +49,24 @@ const TenantCardsRoute = TenantCardsRouteImport.update({
   path: '/cards',
   getParentRoute: () => TenantRouteRoute,
 } as any)
-const TenantAdminRoute = TenantAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const TenantDashboardRoute = TenantDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => TenantRouteRoute,
 } as any)
-const TenantPaymentsIndexRoute = TenantPaymentsIndexRouteImport.update({
-  id: '/payments/',
-  path: '/payments/',
+const TenantJoinRoute = TenantJoinRouteImport.update({
+  id: '/join',
+  path: '/join',
+  getParentRoute: () => TenantRouteRoute,
+} as any)
+const TenantLoginRoute = TenantLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => TenantRouteRoute,
+} as any)
+const TenantTransfersRoute = TenantTransfersRouteImport.update({
+  id: '/transfers',
+  path: '/transfers',
   getParentRoute: () => TenantRouteRoute,
 } as any)
 const TenantAccountsIndexRoute = TenantAccountsIndexRouteImport.update({
@@ -79,9 +74,9 @@ const TenantAccountsIndexRoute = TenantAccountsIndexRouteImport.update({
   path: '/accounts/',
   getParentRoute: () => TenantRouteRoute,
 } as any)
-const TenantPaymentsNewRoute = TenantPaymentsNewRouteImport.update({
-  id: '/payments/new',
-  path: '/payments/new',
+const TenantAccountsIdRoute = TenantAccountsIdRouteImport.update({
+  id: '/accounts/$id',
+  path: '/accounts/$id',
   getParentRoute: () => TenantRouteRoute,
 } as any)
 const TenantCheckoutOrderIdRoute = TenantCheckoutOrderIdRouteImport.update({
@@ -89,9 +84,14 @@ const TenantCheckoutOrderIdRoute = TenantCheckoutOrderIdRouteImport.update({
   path: '/checkout/$orderId',
   getParentRoute: () => TenantRouteRoute,
 } as any)
-const TenantAccountsIdRoute = TenantAccountsIdRouteImport.update({
-  id: '/accounts/$id',
-  path: '/accounts/$id',
+const TenantPaymentsIndexRoute = TenantPaymentsIndexRouteImport.update({
+  id: '/payments/',
+  path: '/payments/',
+  getParentRoute: () => TenantRouteRoute,
+} as any)
+const TenantPaymentsNewRoute = TenantPaymentsNewRouteImport.update({
+  id: '/payments/new',
+  path: '/payments/new',
   getParentRoute: () => TenantRouteRoute,
 } as any)
 
@@ -203,11 +203,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/create-bank': {
-      id: '/create-bank'
-      path: '/create-bank'
-      fullPath: '/create-bank'
-      preLoaderRoute: typeof CreateBankRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$tenant': {
@@ -217,39 +217,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/create-bank': {
+      id: '/create-bank'
+      path: '/create-bank'
+      fullPath: '/create-bank'
+      preLoaderRoute: typeof CreateBankRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$tenant/transfers': {
-      id: '/$tenant/transfers'
-      path: '/transfers'
-      fullPath: '/$tenant/transfers'
-      preLoaderRoute: typeof TenantTransfersRouteImport
-      parentRoute: typeof TenantRouteRoute
-    }
-    '/$tenant/login': {
-      id: '/$tenant/login'
-      path: '/login'
-      fullPath: '/$tenant/login'
-      preLoaderRoute: typeof TenantLoginRouteImport
-      parentRoute: typeof TenantRouteRoute
-    }
-    '/$tenant/join': {
-      id: '/$tenant/join'
-      path: '/join'
-      fullPath: '/$tenant/join'
-      preLoaderRoute: typeof TenantJoinRouteImport
-      parentRoute: typeof TenantRouteRoute
-    }
-    '/$tenant/dashboard': {
-      id: '/$tenant/dashboard'
-      path: '/dashboard'
-      fullPath: '/$tenant/dashboard'
-      preLoaderRoute: typeof TenantDashboardRouteImport
+    '/$tenant/admin': {
+      id: '/$tenant/admin'
+      path: '/admin'
+      fullPath: '/$tenant/admin'
+      preLoaderRoute: typeof TenantAdminRouteImport
       parentRoute: typeof TenantRouteRoute
     }
     '/$tenant/cards': {
@@ -259,18 +238,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantCardsRouteImport
       parentRoute: typeof TenantRouteRoute
     }
-    '/$tenant/admin': {
-      id: '/$tenant/admin'
-      path: '/admin'
-      fullPath: '/$tenant/admin'
-      preLoaderRoute: typeof TenantAdminRouteImport
+    '/$tenant/dashboard': {
+      id: '/$tenant/dashboard'
+      path: '/dashboard'
+      fullPath: '/$tenant/dashboard'
+      preLoaderRoute: typeof TenantDashboardRouteImport
       parentRoute: typeof TenantRouteRoute
     }
-    '/$tenant/payments/': {
-      id: '/$tenant/payments/'
-      path: '/payments'
-      fullPath: '/$tenant/payments/'
-      preLoaderRoute: typeof TenantPaymentsIndexRouteImport
+    '/$tenant/join': {
+      id: '/$tenant/join'
+      path: '/join'
+      fullPath: '/$tenant/join'
+      preLoaderRoute: typeof TenantJoinRouteImport
+      parentRoute: typeof TenantRouteRoute
+    }
+    '/$tenant/login': {
+      id: '/$tenant/login'
+      path: '/login'
+      fullPath: '/$tenant/login'
+      preLoaderRoute: typeof TenantLoginRouteImport
+      parentRoute: typeof TenantRouteRoute
+    }
+    '/$tenant/transfers': {
+      id: '/$tenant/transfers'
+      path: '/transfers'
+      fullPath: '/$tenant/transfers'
+      preLoaderRoute: typeof TenantTransfersRouteImport
       parentRoute: typeof TenantRouteRoute
     }
     '/$tenant/accounts/': {
@@ -280,11 +273,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantAccountsIndexRouteImport
       parentRoute: typeof TenantRouteRoute
     }
-    '/$tenant/payments/new': {
-      id: '/$tenant/payments/new'
-      path: '/payments/new'
-      fullPath: '/$tenant/payments/new'
-      preLoaderRoute: typeof TenantPaymentsNewRouteImport
+    '/$tenant/accounts/$id': {
+      id: '/$tenant/accounts/$id'
+      path: '/accounts/$id'
+      fullPath: '/$tenant/accounts/$id'
+      preLoaderRoute: typeof TenantAccountsIdRouteImport
       parentRoute: typeof TenantRouteRoute
     }
     '/$tenant/checkout/$orderId': {
@@ -294,11 +287,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantCheckoutOrderIdRouteImport
       parentRoute: typeof TenantRouteRoute
     }
-    '/$tenant/accounts/$id': {
-      id: '/$tenant/accounts/$id'
-      path: '/accounts/$id'
-      fullPath: '/$tenant/accounts/$id'
-      preLoaderRoute: typeof TenantAccountsIdRouteImport
+    '/$tenant/payments/': {
+      id: '/$tenant/payments/'
+      path: '/payments'
+      fullPath: '/$tenant/payments/'
+      preLoaderRoute: typeof TenantPaymentsIndexRouteImport
+      parentRoute: typeof TenantRouteRoute
+    }
+    '/$tenant/payments/new': {
+      id: '/$tenant/payments/new'
+      path: '/payments/new'
+      fullPath: '/$tenant/payments/new'
+      preLoaderRoute: typeof TenantPaymentsNewRouteImport
       parentRoute: typeof TenantRouteRoute
     }
   }
